@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.mmc.multi.kafka.starter.MmcMultiConsumerAutoConfiguration
