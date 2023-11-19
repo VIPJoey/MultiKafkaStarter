@@ -12,7 +12,7 @@ SpringBoot 零代码方式整合多个kafka数据源，支持任意kafka集群�
 1、引入最新依赖包，如果找不到依赖包，请到工程目录```mvn clean package install```执行一下命令。
 ```xml
 <dependency>
-    <groupId>com.github.mmc</groupId>
+    <groupId>io.github.vipjoey</groupId>
     <artifactId>multi-kafka-consumer-starter</artifactId>
     <version>最新版本号</version>
 </dependency>
