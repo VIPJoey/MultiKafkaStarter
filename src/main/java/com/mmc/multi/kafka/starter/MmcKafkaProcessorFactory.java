@@ -29,9 +29,9 @@ public class MmcKafkaProcessorFactory {
     @Resource
     private DefaultListableBeanFactory defaultListableBeanFactory;
 
-    public MmcKafkaKafkaAbastrctProcessor<? extends MmcKafkaMsg> buildInputer(
+    public MmcKafkaKafkaAbastrctProcessor<? > buildInputer(
             String name, MmcMultiKafkaProperties.MmcKafkaProperties properties,
-            Map<String, MmcKafkaKafkaAbastrctProcessor<? extends MmcKafkaMsg>> suitableClass) throws Exception {
+            Map<String, MmcKafkaKafkaAbastrctProcessor<? >> suitableClass) throws Exception {
 
         // 如果没有配置process，则直接从注册的Bean里查找
         if (!StringUtils.hasText(properties.getProcessor())) {
@@ -47,7 +47,7 @@ public class MmcKafkaProcessorFactory {
         }
 
         // 如果ioc容器已经存在该处理实例，则直接使用，避免既配置了process，又使用了@Service等注解
-        MmcKafkaKafkaAbastrctProcessor<? extends MmcKafkaMsg> inc = findProcessorByClass(name, properties.getProcessor(), suitableClass);
+        MmcKafkaKafkaAbastrctProcessor<? > inc = findProcessorByClass(name, properties.getProcessor(), suitableClass);
         if (null != inc) {
             return inc;
         }
@@ -61,7 +61,7 @@ public class MmcKafkaProcessorFactory {
 
         // 创建实例
         Constructor<?> constructor = clazz.getConstructor();
-        MmcKafkaKafkaAbastrctProcessor<? extends MmcKafkaMsg> ins = (MmcKafkaKafkaAbastrctProcessor<? extends MmcKafkaMsg>) constructor.newInstance();
+        MmcKafkaKafkaAbastrctProcessor<? > ins = (MmcKafkaKafkaAbastrctProcessor<? >) constructor.newInstance();
 
         // 注入依赖的变量
         defaultListableBeanFactory.autowireBean(ins);
@@ -69,8 +69,8 @@ public class MmcKafkaProcessorFactory {
         return ins;
     }
 
-    private MmcKafkaKafkaAbastrctProcessor<? extends MmcKafkaMsg> findProcessorByName(String name, String processor, Map<String,
-            MmcKafkaKafkaAbastrctProcessor<? extends MmcKafkaMsg>> suitableClass) {
+    private MmcKafkaKafkaAbastrctProcessor<? > findProcessorByName(String name, String processor, Map<String,
+            MmcKafkaKafkaAbastrctProcessor<? >> suitableClass) {
 
         return suitableClass.entrySet()
                 .stream()
@@ -82,8 +82,8 @@ public class MmcKafkaProcessorFactory {
     }
 
 
-    private MmcKafkaKafkaAbastrctProcessor<? extends MmcKafkaMsg> findProcessorByClass(String name, String processor, Map<String,
-            MmcKafkaKafkaAbastrctProcessor<? extends MmcKafkaMsg>> suitableClass) {
+    private MmcKafkaKafkaAbastrctProcessor<? > findProcessorByClass(String name, String processor, Map<String,
+            MmcKafkaKafkaAbastrctProcessor<? >> suitableClass) {
 
         return suitableClass.entrySet()
                 .stream()

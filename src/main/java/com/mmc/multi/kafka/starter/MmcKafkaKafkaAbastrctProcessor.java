@@ -17,6 +17,8 @@ import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -30,7 +32,7 @@ import java.util.stream.Stream;
  */
 @Slf4j
 @Setter
-public abstract class MmcKafkaKafkaAbastrctProcessor<T extends MmcKafkaMsg> implements MmcKafkaStringInputer {
+public abstract class MmcKafkaKafkaAbastrctProcessor<T> implements MmcKafkaStringInputer {
 
     /**
      * Kafka容器.
@@ -44,6 +46,10 @@ public abstract class MmcKafkaKafkaAbastrctProcessor<T extends MmcKafkaMsg> impl
      * 消费者配置.
      */
     protected MmcMultiKafkaProperties.MmcKafkaProperties properties;
+    /**
+     * 当前处理器类型.
+     */
+    private Class<T> type = null;
 
     public MmcKafkaKafkaAbastrctProcessor() {
 
@@ -78,7 +84,14 @@ public abstract class MmcKafkaKafkaAbastrctProcessor<T extends MmcKafkaMsg> impl
                     .filter(Objects::nonNull)
                     .filter(this::isRightRecord);
 
-            if (properties.isDuplicate()) {
+            // 支持配置强制去重或实现了接口能力去重
+            if (properties.isDuplicate() || isSubtypeOfInterface(MmcKafkaMsg.class)) {
+
+                // 检查是否实现了去重接口
+                if (!isSubtypeOfInterface(MmcKafkaMsg.class)) {
+                    throw new RuntimeException("The interface "
+                            + MmcKafkaMsg.class.getName() + " is not implemented if you set the config `spring.kafka.xxx.duplicate=true` .");
+                }
 
                 dataStream = dataStream.collect(Collectors.groupingBy(this::buildRoutekey))
                         .entrySet()
@@ -100,6 +113,24 @@ public abstract class MmcKafkaKafkaAbastrctProcessor<T extends MmcKafkaMsg> impl
             log.error(name + "-dealMessage error ", e);
         }
     }
+
+    protected boolean isSubtypeOfInterface(Class<?> interfaceClass) {
+
+        if (null == type) {
+
+            Type superClass = getClass().getGenericSuperclass();
+            if (superClass instanceof ParameterizedType) {
+                ParameterizedType parameterizedType = (ParameterizedType) superClass;
+                Type[] typeArguments = parameterizedType.getActualTypeArguments();
+                if (typeArguments.length > 0 && typeArguments[0] instanceof Class) {
+                    //noinspection unchecked
+                    type = (Class<T>) typeArguments[0];
+                }
+            }
+        }
+        return (null != type) && interfaceClass.isAssignableFrom(type);
+    }
+
 
 
     /**
@@ -181,12 +212,12 @@ public abstract class MmcKafkaKafkaAbastrctProcessor<T extends MmcKafkaMsg> impl
      * @param entry entry
      * @return 最好更新的实体
      */
-    protected  T findLasted(Map.Entry<String, List<T>> entry) {
+    protected T findLasted(Map.Entry<String, List<T>> entry) {
 
         try {
 
             Optional<T> d = entry.getValue().stream()
-                    .max(Comparator.comparing(T::getRoutekey));
+                    .max(Comparator.comparing(x -> ((MmcKafkaMsg) x).getRoutekey()));
 
             if (d.isPresent()) {
 
@@ -208,8 +239,9 @@ public abstract class MmcKafkaKafkaAbastrctProcessor<T extends MmcKafkaMsg> impl
      * @return 实体类的唯一键
      */
     protected String buildRoutekey(T t) {
-        return t.getRoutekey();
+        return ((MmcKafkaMsg) t).getRoutekey();
     }
+
 
     /**
      * 过滤消息.
@@ -226,7 +258,28 @@ public abstract class MmcKafkaKafkaAbastrctProcessor<T extends MmcKafkaMsg> impl
      *
      * @return 反序列的实体类类型
      */
-    protected abstract Class<T> getEntityClass();
+    protected  Class<T> getEntityClass() {
+
+
+        if (null == type) {
+
+            synchronized(this) {
+
+                Type superClass = getClass().getGenericSuperclass();
+                if (superClass instanceof ParameterizedType) {
+                    ParameterizedType parameterizedType = (ParameterizedType) superClass;
+                    Type[] typeArguments = parameterizedType.getActualTypeArguments();
+                    if (typeArguments.length > 0 && typeArguments[0] instanceof Class) {
+                        //noinspection unchecked
+                        type = (Class<T>) typeArguments[0];
+                    }
+                }
+            }
+
+        }
+
+        return type;
+    }
 
     /**
      * 处理消息.

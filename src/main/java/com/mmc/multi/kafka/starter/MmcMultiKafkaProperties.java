@@ -63,9 +63,9 @@ public class MmcMultiKafkaProperties {
          */
         private String type = "batch";
         /**
-         * 是否在批次内对kafka进行去重，默认为true.
+         * 是否在批次内对kafka进行去重，默认为false.
          */
-        private boolean duplicate = true;
+        private boolean duplicate = false;
         /**
          * 处理类.
          */

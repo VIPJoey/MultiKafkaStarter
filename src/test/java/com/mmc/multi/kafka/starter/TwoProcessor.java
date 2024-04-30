@@ -36,15 +36,12 @@ public class TwoProcessor extends MmcKafkaKafkaAbastrctProcessor<DemoMsg> {
     }
 
     @Override
-    protected Class<DemoMsg> getEntityClass() {
-        return DemoMsg.class;
-    }
-
-    @Override
     protected void dealMessage(List<DemoMsg> datas) {
 
 
-        demoService.dealMessage("two", datas.stream().map(x -> (MmcKafkaMsg) x).collect(Collectors.toList()));
+        datas.forEach(x -> {
+            log.info("dealMessage two: {}", x);
+        });
 
     }
 

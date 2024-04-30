@@ -27,18 +27,13 @@ import java.util.stream.Collectors;
 @Service
 public class OneProcessor extends MmcKafkaKafkaAbastrctProcessor<DemoMsg> {
 
-    @Resource
-    private DemoService demoService;
-
-    @Override
-    protected Class<DemoMsg> getEntityClass() {
-        return DemoMsg.class;
-    }
 
     @Override
     protected void dealMessage(List<DemoMsg> datas) {
 
-        demoService.dealMessage("one", datas.stream().map(x -> (MmcKafkaMsg) x).collect(Collectors.toList()));
+        datas.forEach(x -> {
+            log.info("dealMessage one: {}", x);
+        });
 
     }
 

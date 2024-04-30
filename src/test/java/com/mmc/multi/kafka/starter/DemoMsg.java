@@ -19,7 +19,7 @@ import lombok.Data;
  * @date 2023/10/29 上午10:27
  */
 @Data
-class DemoMsg implements MmcKafkaMsg {
+class DemoMsg {
 
     private String routekey;
 
