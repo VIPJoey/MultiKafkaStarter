@@ -67,6 +67,10 @@ public class MmcMultiKafkaProperties {
          */
         private boolean duplicate = false;
         /**
+         * json是否为下划线模式，默认为false.
+         */
+        private boolean snakeCase = false;
+        /**
          * 处理类.
          */
         private String processor;

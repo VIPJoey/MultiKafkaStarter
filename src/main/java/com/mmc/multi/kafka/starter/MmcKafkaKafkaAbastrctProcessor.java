@@ -13,16 +13,10 @@ package com.mmc.multi.kafka.starter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
-import org.springframework.util.Assert;
+import org.springframework.kafka.listener.BatchMessageListener;
 import org.springframework.util.CollectionUtils;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.List;
 
 /**
  * MmcKafkaKafkaAbastrctProcessor.
@@ -32,40 +26,10 @@ import java.util.stream.Stream;
  */
 @Slf4j
 @Setter
-public abstract class MmcKafkaKafkaAbastrctProcessor<T> implements MmcKafkaStringInputer {
+public abstract class MmcKafkaKafkaAbastrctProcessor<T> extends KafkaAbstractProcessor<T> implements BatchMessageListener<String, Object> {
 
-    /**
-     * Kafka容器.
-     */
-    protected ConcurrentMessageListenerContainer<Object, Object> container;
-    /**
-     * 消费者名称.
-     */
-    protected String name;
-    /**
-     * 消费者配置.
-     */
-    protected MmcMultiKafkaProperties.MmcKafkaProperties properties;
-    /**
-     * 当前处理器类型.
-     */
-    private Class<T> type = null;
-
-    public MmcKafkaKafkaAbastrctProcessor() {
-
-    }
-
-    public MmcKafkaKafkaAbastrctProcessor(String name, MmcMultiKafkaProperties.MmcKafkaProperties properties) {
-
-        this.name = name;
-        this.properties = properties;
-    }
-
-    /**
-     * 消费kafka消息.
-     */
     @Override
-    public void onMessage(List<ConsumerRecord<String, String>> records) {
+    public void onMessage(List<ConsumerRecord<String, Object>> records) {
 
         if (null == records || CollectionUtils.isEmpty(records)) {
 
@@ -73,220 +37,6 @@ public abstract class MmcKafkaKafkaAbastrctProcessor<T> implements MmcKafkaStrin
             return;
         }
 
-        Assert.hasText(name, "You must pass the field `name` to the Constructor or invoke the setName() after the class was created.");
-        Assert.notNull(properties, "You must pass the field `properties` to the Constructor or invoke the setProperties() after the class was created.");
-
-        try {
-
-            Stream<T> dataStream = records.stream()
-                    .map(ConsumerRecord::value)
-                    .flatMap(this::doParse)
-                    .filter(Objects::nonNull)
-                    .filter(this::isRightRecord);
-
-            // 支持配置强制去重或实现了接口能力去重
-            if (properties.isDuplicate() || isSubtypeOfInterface(MmcKafkaMsg.class)) {
-
-                // 检查是否实现了去重接口
-                if (!isSubtypeOfInterface(MmcKafkaMsg.class)) {
-                    throw new RuntimeException("The interface "
-                            + MmcKafkaMsg.class.getName() + " is not implemented if you set the config `spring.kafka.xxx.duplicate=true` .");
-                }
-
-                dataStream = dataStream.collect(Collectors.groupingBy(this::buildRoutekey))
-                        .entrySet()
-                        .stream()
-                        .map(this::findLasted)
-                        .filter(Objects::nonNull);
-            }
-
-            List<T> datas = dataStream.collect(Collectors.toList());
-            if (CommonUtil.isNotEmpty(datas)) {
-
-                this.dealMessage(datas);
-
-            }
-
-
-        } catch (Exception e) {
-
-            log.error(name + "-dealMessage error ", e);
-        }
+        receiveMessage(records);
     }
-
-    protected boolean isSubtypeOfInterface(Class<?> interfaceClass) {
-
-        if (null == type) {
-
-            Type superClass = getClass().getGenericSuperclass();
-            if (superClass instanceof ParameterizedType) {
-                ParameterizedType parameterizedType = (ParameterizedType) superClass;
-                Type[] typeArguments = parameterizedType.getActualTypeArguments();
-                if (typeArguments.length > 0 && typeArguments[0] instanceof Class) {
-                    //noinspection unchecked
-                    type = (Class<T>) typeArguments[0];
-                }
-            }
-        }
-        return (null != type) && interfaceClass.isAssignableFrom(type);
-    }
-
-
-
-    /**
-     * 将kafka消息解析为实体，支持json对象或者json数组.
-     *
-     * @param json kafka消息
-     * @return 实体类
-     */
-    protected Stream<T> doParse(String json) {
-
-        if (json.startsWith("[")) {
-
-            // 数组
-            List<T> datas = JsonUtil.parseJsonArray(json, getEntityClass());
-            if (CommonUtil.isEmpty(datas)) {
-
-                log.warn("{} doParse error, json={} is error.", name, json);
-                return Stream.empty();
-            }
-
-            // 反序列对象后，做一些初始化操作
-            datas = datas.stream().peek(this::doAfterParse).collect(Collectors.toList());
-
-            return datas.stream();
-
-        } else {
-
-            // 对象
-            T data = JsonUtil.parseJsonObject(json, getEntityClass());
-            if (null == data) {
-
-                log.warn("{} doParse error, json={} is error.", name, json);
-                return Stream.empty();
-            }
-
-            // 反序列对象后，做一些初始化操作
-            doAfterParse(data);
-
-            return Stream.of(data);
-        }
-    }
-
-    /**
-     * 反序列对象后，做一些初始化操作.
-     *
-     * @param data 待处理的实体
-     */
-    protected void doAfterParse(T data) {
-
-    }
-
-    /**
-     * 设置kafka容器.
-     *
-     * @param container kafka容器
-     */
-    public void setContainer(ConcurrentMessageListenerContainer<Object, Object> container) {
-
-        this.container = container;
-    }
-
-    /**
-     * 停止kafka容器.
-     */
-    public void stop() {
-        container.stop();
-    }
-
-    /**
-     * 启动kafka容器.
-     */
-    public void start() {
-        container.start();
-    }
-
-    /**
-     * 如果单次拉取的kafka消息有重复，则根据某个字段分组，并取最新的一个.
-     *
-     * @param entry entry
-     * @return 最好更新的实体
-     */
-    protected T findLasted(Map.Entry<String, List<T>> entry) {
-
-        try {
-
-            Optional<T> d = entry.getValue().stream()
-                    .max(Comparator.comparing(x -> ((MmcKafkaMsg) x).getRoutekey()));
-
-            if (d.isPresent()) {
-
-                return d.get();
-            }
-
-        } catch (Exception e) {
-
-            String content = JsonUtil.toJsonStr(entry.getValue());
-            log.error("处理消息出错:{}", e.getMessage() + ": " + content, e);
-        }
-        return null;
-    }
-
-    /**
-     * 构造实体类的唯一键.
-     *
-     * @param t 待处理实体
-     * @return 实体类的唯一键
-     */
-    protected String buildRoutekey(T t) {
-        return ((MmcKafkaMsg) t).getRoutekey();
-    }
-
-
-    /**
-     * 过滤消息.
-     *
-     * @param t 待处理实体
-     * @return true:不过滤，false:过滤
-     */
-    protected boolean isRightRecord(T t) {
-        return true;
-    }
-
-    /**
-     * 获取反序列的实体类类型.
-     *
-     * @return 反序列的实体类类型
-     */
-    protected  Class<T> getEntityClass() {
-
-
-        if (null == type) {
-
-            synchronized(this) {
-
-                Type superClass = getClass().getGenericSuperclass();
-                if (superClass instanceof ParameterizedType) {
-                    ParameterizedType parameterizedType = (ParameterizedType) superClass;
-                    Type[] typeArguments = parameterizedType.getActualTypeArguments();
-                    if (typeArguments.length > 0 && typeArguments[0] instanceof Class) {
-                        //noinspection unchecked
-                        type = (Class<T>) typeArguments[0];
-                    }
-                }
-            }
-
-        }
-
-        return type;
-    }
-
-    /**
-     * 处理消息.
-     *
-     * @param datas 待处理列表
-     */
-    protected abstract void dealMessage(List<T> datas) throws ExecutionException, InterruptedException;
-
-
 }

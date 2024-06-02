@@ -37,6 +37,17 @@ public class MmcMultiConsumerAutoConfiguration extends BaseConsumerConfiguration
     private MmcMultiKafkaProperties mmcMultiKafkaProperties;
 
     @Bean
+    public MmcKafkaBeanPostProcessor mmcKafkaBeanPostProcessor() {
+        return new MmcKafkaBeanPostProcessor();
+    }
+
+    @Bean
+    public MmcKafkaProcessorFactory processorFactory() {
+
+        return new MmcKafkaProcessorFactory();
+    }
+
+    @Bean
     public MmcKafkaInputerContainer mmcKafkaInputerContainer(MmcKafkaProcessorFactory factory,
                                                              MmcKafkaBeanPostProcessor beanPostProcessor) throws Exception {
 
@@ -57,7 +68,7 @@ public class MmcMultiConsumerAutoConfiguration extends BaseConsumerConfiguration
             if (properties.isEnabled()) {
 
                 // 生成消费者
-                MmcKafkaKafkaAbastrctProcessor inputer = factory.buildInputer(name, properties, beanPostProcessor.getSuitableClass());
+                KafkaAbstractProcessor inputer = factory.buildInputer(name, properties, beanPostProcessor.getSuitableClass());
 
                 // 输入源容器
                 ConcurrentMessageListenerContainer<Object, Object> container = concurrentMessageListenerContainer(properties);
@@ -85,16 +96,7 @@ public class MmcMultiConsumerAutoConfiguration extends BaseConsumerConfiguration
         return new MmcKafkaInputerContainer(inputers);
     }
 
-    @Bean
-    public MmcKafkaBeanPostProcessor mmcKafkaBeanPostProcessor() {
-        return new MmcKafkaBeanPostProcessor();
-    }
 
-    @Bean
-    public MmcKafkaProcessorFactory processorFactory() {
-
-        return new MmcKafkaProcessorFactory();
-    }
 
 
 }

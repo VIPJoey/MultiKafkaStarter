@@ -26,14 +26,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MmcKafkaBeanPostProcessor implements BeanPostProcessor {
 
     @Getter
-    private final Map<String, MmcKafkaKafkaAbastrctProcessor<?>> suitableClass = new ConcurrentHashMap<>();
+    private final Map<String, KafkaAbstractProcessor<?>> suitableClass = new ConcurrentHashMap<>();
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 
-        if (bean instanceof MmcKafkaKafkaAbastrctProcessor) {
+        if (bean instanceof KafkaAbstractProcessor) {
 
-            MmcKafkaKafkaAbastrctProcessor<?> target = (MmcKafkaKafkaAbastrctProcessor<?>) bean;
+            KafkaAbstractProcessor<?> target = (KafkaAbstractProcessor<?>) bean;
             suitableClass.putIfAbsent(beanName, target);
             suitableClass.putIfAbsent(bean.getClass().getName(), target);
         }

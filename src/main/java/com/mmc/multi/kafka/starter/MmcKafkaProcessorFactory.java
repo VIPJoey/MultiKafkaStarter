@@ -29,9 +29,9 @@ public class MmcKafkaProcessorFactory {
     @Resource
     private DefaultListableBeanFactory defaultListableBeanFactory;
 
-    public MmcKafkaKafkaAbastrctProcessor<? > buildInputer(
+    public KafkaAbstractProcessor<? > buildInputer(
             String name, MmcMultiKafkaProperties.MmcKafkaProperties properties,
-            Map<String, MmcKafkaKafkaAbastrctProcessor<? >> suitableClass) throws Exception {
+            Map<String, KafkaAbstractProcessor<? >> suitableClass) throws Exception {
 
         // 如果没有配置process，则直接从注册的Bean里查找
         if (!StringUtils.hasText(properties.getProcessor())) {
@@ -47,21 +47,21 @@ public class MmcKafkaProcessorFactory {
         }
 
         // 如果ioc容器已经存在该处理实例，则直接使用，避免既配置了process，又使用了@Service等注解
-        MmcKafkaKafkaAbastrctProcessor<? > inc = findProcessorByClass(name, properties.getProcessor(), suitableClass);
+        KafkaAbstractProcessor<? > inc = findProcessorByClass(name, properties.getProcessor(), suitableClass);
         if (null != inc) {
             return inc;
         }
 
-        // 指定的processor处理类必须继承MmcKafkaKafkaAbastrctProcessor
+        // 指定的processor处理类必须继承KafkaAbstractProcessor
         Class<?> clazz = Class.forName(properties.getProcessor());
-        boolean isSubclass = MmcKafkaKafkaAbastrctProcessor.class.isAssignableFrom(clazz);
+        boolean isSubclass = KafkaAbstractProcessor.class.isAssignableFrom(clazz);
         if (!isSubclass) {
-            throw new IllegalStateException(clazz.getName() + " is not subClass of MmcKafkaKafkaAbastrctProcessor.");
+            throw new IllegalStateException(clazz.getName() + " is not subClass of KafkaAbstractProcessor.");
         }
 
         // 创建实例
         Constructor<?> constructor = clazz.getConstructor();
-        MmcKafkaKafkaAbastrctProcessor<? > ins = (MmcKafkaKafkaAbastrctProcessor<? >) constructor.newInstance();
+        KafkaAbstractProcessor<? > ins = (KafkaAbstractProcessor<? >) constructor.newInstance();
 
         // 注入依赖的变量
         defaultListableBeanFactory.autowireBean(ins);
@@ -69,8 +69,8 @@ public class MmcKafkaProcessorFactory {
         return ins;
     }
 
-    private MmcKafkaKafkaAbastrctProcessor<? > findProcessorByName(String name, String processor, Map<String,
-            MmcKafkaKafkaAbastrctProcessor<? >> suitableClass) {
+    private KafkaAbstractProcessor<? > findProcessorByName(String name, String processor, Map<String,
+            KafkaAbstractProcessor<? >> suitableClass) {
 
         return suitableClass.entrySet()
                 .stream()
@@ -82,8 +82,8 @@ public class MmcKafkaProcessorFactory {
     }
 
 
-    private MmcKafkaKafkaAbastrctProcessor<? > findProcessorByClass(String name, String processor, Map<String,
-            MmcKafkaKafkaAbastrctProcessor<? >> suitableClass) {
+    private KafkaAbstractProcessor<? > findProcessorByClass(String name, String processor, Map<String,
+            KafkaAbstractProcessor<? >> suitableClass) {
 
         return suitableClass.entrySet()
                 .stream()

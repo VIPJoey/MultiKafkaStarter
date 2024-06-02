@@ -1,4 +1,4 @@
-# MultiKafkaConsumerStarter [V1.1]
+# MultiKafkaConsumerStarter [V2.0]
 SpringBoot 零代码方式整合多个kafka数据源，支持任意kafka集群，已封装为一个小模块，集成所有kafka配置，让注意力重新回归业务本身。
 
 [参考文档](http://t.csdnimg.cn/SHwBF)
@@ -44,10 +44,21 @@ spring.kafka.two.consumer.max-poll-records=10
 spring.kafka.two.consumer.value-deserializer=org.apache.kafka.common.serialization.StringDeserializer
 spring.kafka.two.consumer.key-deserializer=org.apache.kafka.common.serialization.StringDeserializer
 
+## protobuf类型的消息的kafka配置
+spring.kafka.pb.enabled=true
+spring.kafka.pb.consumer.bootstrapServers=${spring.embedded.kafka.brokers}
+spring.kafka.pb.topic=mmc-topic-pb
+spring.kafka.pb.group-id=group-consumer-pb
+spring.kafka.pb.processor=pbProcessor
+spring.kafka.pb.consumer.auto-offset-reset=latest
+spring.kafka.pb.consumer.max-poll-records=10
+spring.kafka.pb.consumer.key-deserializer=org.apache.kafka.common.serialization.StringDeserializer
+spring.kafka.pb.consumer.value-deserializer=org.apache.kafka.common.serialization.ByteArrayDeserializer
+
 
 ```
 
-3、新建kafka消息对应的实体类，要求需要实现`MmcKafkaMsg`接口，例如
+3、新建kafka消息对应的实体类，可以选择实现`MmcKafkaMsg`接口，例如
 ```java
 @Data
 class DemoMsg implements MmcKafkaMsg {
@@ -87,6 +98,40 @@ public class OneProcessor extends MmcKafkaKafkaAbastrctProcessor<DemoMsg> {
 
 
 }
+
+@Slf4j
+@Service("pbProcessor")
+public class PbProcessor extends MmcKafkaKafkaAbastrctProcessor<DemoMsg> {
+
+    @Override
+    protected Stream<DemoMsg> doParseProtobuf(byte[] record) {
+
+
+        try {
+
+            DemoPb.PbMsg msg = DemoPb.PbMsg.parseFrom(record);
+            DemoMsg demo = new DemoMsg();
+            BeanUtils.copyProperties(msg, demo);
+
+            return Stream.of(demo);
+
+        } catch (InvalidProtocolBufferException e) {
+
+            log.error("parssPbError", e);
+            return Stream.empty();
+        }
+
+    }
+
+    @Override
+    protected void dealMessage(List<DemoMsg> datas) {
+
+        System.out.println("PBdatas: " + datas);
+
+    }
+}
+
+
 ```
 
 ## 三、其它特性
@@ -96,13 +141,50 @@ public class OneProcessor extends MmcKafkaKafkaAbastrctProcessor<DemoMsg> {
 spring.kafka.xxx.duplicate=true
 ```
 
+2、支持字符串kafka消息，json是驼峰或者下划线
+```properties
+# 默认为支持驼峰的kafka消息，为ture则支持下划线的消息
+spring.kafka.xxx.snakeCase=false
+```
+
+
+3、支持pb的kafka消息，需要自行重写父类的`doParseProtobuf`方法；
+```java
+    @Override
+    protected Stream<DemoMsg> doParseProtobuf(byte[] record) {
+    
+            try {
+    
+                DemoMsg msg = new DemoMsg();
+                DemoPb.PbMsg pb = DemoPb.PbMsg.parseFrom(record);
+                BeanUtils.copyProperties(pb, msg);
+        
+                return Stream.of(msg);
+        
+                } catch (InvalidProtocolBufferException e) {
+        
+                log.error("doParseProtobuf error: {}", e.getMessage());
+        
+                return Stream.empty();
+            }
+
+        }
+```
+
+
 ## 四、变更记录
 
+* 20240602  v2.0 支持protobuf、json格式
 * 20240430  v1.1 取消限定符
 * 20231111  v1.0 初始化
 
+## 五、参考文章
 
-## 五、特别说明
+[《搭建大型分布式服务（三十六）SpringBoot 零代码方式整合多个kafka数据源》](https://blog.csdn.net/hanyi_/article/details/133826712?spm=1001.2014.3001.5502)
+[《搭建大型分布式服务（三十七）SpringBoot 整合多个kafka数据源-取消限定符》](https://blog.csdn.net/hanyi_/article/details/135940206)
+[《搭建大型分布式服务（三十八）SpringBoot 整合多个kafka数据源-支持protobuf》](https://blog.csdn.net/hanyi_/article/details/139387941?spm=1001.2014.3001.5502)
+
+## 六、特别说明
 
 * 欢迎共建
 * 佛系改bug
