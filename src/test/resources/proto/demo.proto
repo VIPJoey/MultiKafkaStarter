@@ -1,0 +1,17 @@
+syntax = "proto2";
+
+package  trpc.wechat.search.data;
+
+option java_package = "com.smart.retailing.multi.kafka.starter.proto";
+option java_outer_classname = "DemoPb";
+
+message PbMsg {
+
+    optional string routekey = 1;
+
+    optional string cosImgUrl = 2;
+
+    optional string base64str = 3;
+
+
+}
