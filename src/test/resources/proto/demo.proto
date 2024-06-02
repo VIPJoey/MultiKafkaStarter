@@ -1,8 +1,8 @@
 syntax = "proto2";
 
-package  trpc.wechat.search.data;
+package  com.mmc.multi.kafka;
 
-option java_package = "com.smart.retailing.multi.kafka.starter.proto";
+option java_package = "com.mmc.multi.kafka.starter.proto";
 option java_outer_classname = "DemoPb";
 
 message PbMsg {
