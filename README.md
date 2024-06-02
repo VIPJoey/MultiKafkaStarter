@@ -180,9 +180,9 @@ spring.kafka.xxx.snakeCase=false
 
 ## 五、参考文章
 
-[《搭建大型分布式服务（三十六）SpringBoot 零代码方式整合多个kafka数据源》](https://blog.csdn.net/hanyi_/article/details/133826712?spm=1001.2014.3001.5502)
-[《搭建大型分布式服务（三十七）SpringBoot 整合多个kafka数据源-取消限定符》](https://blog.csdn.net/hanyi_/article/details/135940206)
-[《搭建大型分布式服务（三十八）SpringBoot 整合多个kafka数据源-支持protobuf》](https://blog.csdn.net/hanyi_/article/details/139387941?spm=1001.2014.3001.5502)
+* [《搭建大型分布式服务（三十六）SpringBoot 零代码方式整合多个kafka数据源》](https://blog.csdn.net/hanyi_/article/details/133826712?spm=1001.2014.3001.5502)
+* [《搭建大型分布式服务（三十七）SpringBoot 整合多个kafka数据源-取消限定符》](https://blog.csdn.net/hanyi_/article/details/135940206)
+* [《搭建大型分布式服务（三十八）SpringBoot 整合多个kafka数据源-支持protobuf》](https://blog.csdn.net/hanyi_/article/details/139387941?spm=1001.2014.3001.5502)
 
 ## 六、特别说明
 
