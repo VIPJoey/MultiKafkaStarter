@@ -34,7 +34,7 @@ import java.util.stream.Stream;
  */
 @Slf4j
 @Setter
-abstract class KafkaAbstractProcessor<T> implements MmcInputer {
+public abstract class KafkaAbstractProcessor<T> implements MmcInputer {
 
     /**
      * Kafka容器.
@@ -94,12 +94,12 @@ abstract class KafkaAbstractProcessor<T> implements MmcInputer {
                     .filter(this::isRightRecord);
 
             // 支持配置强制去重或实现了接口能力去重
-            if (properties.isDuplicate() || isSubtypeOfInterface(MmcKafkaMsg.class)) {
+            if (properties.isDuplicate() || isSubtypeOfInterface(MmcMsgDistinctAware.class)) {
 
                 // 检查是否实现了去重接口
-                if (!isSubtypeOfInterface(MmcKafkaMsg.class)) {
+                if (!isSubtypeOfInterface(MmcMsgDistinctAware.class)) {
                     throw new RuntimeException("The interface "
-                            + MmcKafkaMsg.class.getName() + " is not implemented if you set the config `spring.kafka.xxx.duplicate=true` .");
+                            + MmcMsgDistinctAware.class.getName() + " is not implemented if you set the config `spring.kafka.xxx.duplicate=true` .");
                 }
 
                 dataStream = dataStream.collect(Collectors.groupingBy(this::buildRoutekey))
@@ -144,13 +144,13 @@ abstract class KafkaAbstractProcessor<T> implements MmcInputer {
     /**
      * 将kafka消息解析为实体，支持json对象或者json数组.
      *
-     * @param msg kafka消息
+     * @param map kafka消息对象，包含key、value、topic、partition、offset等
      * @return 实体类
      */
-    protected Stream<T> doParse(ConsumerRecord<String, Object> msg) {
+    protected Stream<T> doParse(ConsumerRecord<String, Object> map) {
 
         // 消息对象
-        Object record = msg.value();
+        Object record = map.value();
 
         // 如果是pb格式
         if (record instanceof byte[]) {
@@ -173,7 +173,7 @@ abstract class KafkaAbstractProcessor<T> implements MmcInputer {
                 }
 
                 // 反序列对象后，做一些初始化操作
-                datas = datas.stream().peek(this::doAfterParse).collect(Collectors.toList());
+                datas = datas.stream().peek(x -> doKafkaAware(x, map)).peek(this::doAfterParse).collect(Collectors.toList());
 
                 return datas.stream();
 
@@ -187,6 +187,9 @@ abstract class KafkaAbstractProcessor<T> implements MmcInputer {
                     return Stream.empty();
                 }
 
+                // 注入kafka相关
+                doKafkaAware(data, map);
+
                 // 反序列对象后，做一些初始化操作
                 doAfterParse(data);
 
@@ -195,7 +198,7 @@ abstract class KafkaAbstractProcessor<T> implements MmcInputer {
 
         } else if (record instanceof MmcKafkaMsg) {
 
-            // 如果本身就是PandoKafkaMsg对象，直接返回
+            // 如果本身就是MmcKafkaMsg对象，直接返回
             //noinspection unchecked
             return Stream.of((T) record);
 
@@ -204,6 +207,16 @@ abstract class KafkaAbstractProcessor<T> implements MmcInputer {
 
             throw new UnsupportedForMessageFormatException("not support message type");
         }
+
+    }
+
+    protected void doKafkaAware(T x, ConsumerRecord<String, Object> record) {
+
+        if (x instanceof MmcMsgKafkaAware) {
+            ((MmcMsgKafkaAware) x).setOffset(record.offset());
+            ((MmcMsgKafkaAware) x).setTopic(record.topic());
+        }
+
     }
 
     /**
@@ -293,7 +306,7 @@ abstract class KafkaAbstractProcessor<T> implements MmcInputer {
         try {
 
             Optional<T> d = entry.getValue().stream()
-                    .max(Comparator.comparing(x -> ((MmcKafkaMsg) x).getRoutekey()));
+                    .max(Comparator.comparing(x -> ((MmcMsgDistinctAware) x).getRoutekey()));
 
             if (d.isPresent()) {
 
@@ -315,7 +328,7 @@ abstract class KafkaAbstractProcessor<T> implements MmcInputer {
      * @return 实体类的唯一键
      */
     protected String buildRoutekey(T t) {
-        return ((MmcKafkaMsg) t).getRoutekey();
+        return ((MmcMsgDistinctAware) t).getRoutekey();
     }
 
 

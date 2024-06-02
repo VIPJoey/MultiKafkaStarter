@@ -59,6 +59,8 @@ class AppTest {
     @Test
     void testDealMessage() throws Exception {
 
+        Thread.sleep(2 * 1000);
+
         // 模拟生产数据
         produceMessage();
 

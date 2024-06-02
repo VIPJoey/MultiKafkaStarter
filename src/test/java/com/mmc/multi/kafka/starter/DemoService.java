@@ -25,9 +25,9 @@ import java.util.List;
 @Service
 public class DemoService {
 
-    public void dealMessage(String name, List<MmcKafkaMsg> datas) {
+    public void dealMessage(String name, List<MmcMsgDistinctAware> datas) {
 
-        for (MmcKafkaMsg msg : datas) {
+        for (MmcMsgDistinctAware msg : datas) {
 
             log.info(name + " receive: " + JsonUtil.toJsonStr(msg));
 

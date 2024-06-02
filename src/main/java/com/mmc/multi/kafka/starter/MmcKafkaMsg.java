@@ -14,21 +14,8 @@ package com.mmc.multi.kafka.starter;
  * MmcKafkaMsg.
  *
  * @author VIPJoey
- * @date 2023/10/29 上午10:37
+ * @date 2024/6/2 15:58
  */
 public interface MmcKafkaMsg {
 
-    /**
-     * 代表kafka消息的唯一键，用于批次内分组.
-
-     * @return 唯一键
-     */
-    String getRoutekey();
-
-    /**
-     * kafka消息生产或接收时间，用于批次内分组，根据时间去重，取最新的消息.
-     *
-     * @return 消息时间
-     */
-    Long getTimestamp();
 }

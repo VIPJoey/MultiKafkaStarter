@@ -10,26 +10,25 @@
 
 package com.mmc.multi.kafka.starter;
 
-import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
-
 /**
- * MmcMockService.
+ * MmcMsgKafkaAware.
  *
  * @author VIPJoey
- * @date 2023/10/29 下午4:41
+ * @date 2024/6/2 15:39
  */
-@Slf4j
-public class MmcMockService {
+public interface MmcMsgKafkaAware {
 
-    public void dealMessage(List<MmcMsgDistinctAware> datas) {
+    /**
+     * 注入topic.
+     *
+     * @param topic topic名称
+     */
+    void setTopic(String topic);
 
-        for (MmcMsgDistinctAware msg : datas) {
-
-            log.info(JsonUtil.toJsonStr(msg));
-
-        }
-
-    }
+    /**
+     * 注入offset.
+     *
+     * @param offset offset
+     */
+    void setOffset(long offset);
 }

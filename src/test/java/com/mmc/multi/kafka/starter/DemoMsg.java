@@ -19,7 +19,7 @@ import lombok.Data;
  * @date 2023/10/29 上午10:27
  */
 @Data
-class DemoMsg {
+class DemoMsg implements MmcMsgKafkaAware {
 
     private String routekey;
 
@@ -27,4 +27,7 @@ class DemoMsg {
 
     private Long timestamp;
 
+    private String topic;
+
+    private long offset;
 }
