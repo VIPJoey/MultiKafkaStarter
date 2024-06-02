@@ -1,8 +1,6 @@
 # MultiKafkaConsumerStarter [V2.0]
 SpringBoot 零代码方式整合多个kafka数据源，支持任意kafka集群，已封装为一个小模块，集成所有kafka配置，让注意力重新回归业务本身。
 
-[参考文档](http://t.csdnimg.cn/SHwBF)
-
 ## 一、功能特性
 
 * SpringBoot无编程方式整合多个kafka数据源
