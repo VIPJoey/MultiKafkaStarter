@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * MmcKafkaMultiSender.
  *
- * @author tenkye
+ * @author VIPJoey
  * @date 2024/6/23 16:18
  */
 public class MmcKafkaMultiSender implements MmcKafkaSender {
