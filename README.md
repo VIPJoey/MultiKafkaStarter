@@ -15,12 +15,10 @@ SpringBoot 零代码方式整合多个kafka数据源，支持任意kafka集群�
 <dependency>
     <groupId>io.github.vipjoey</groupId>
     <artifactId>multi-kafka-starter</artifactId>
-    <version>最新版本号</version>
+    <version>2.2</version>
 </dependency>
 
 ```
-
-## 二、快速开始
 
 
 ## 二、快速开始（生产端）
