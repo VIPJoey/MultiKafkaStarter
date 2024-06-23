@@ -40,21 +40,24 @@ import java.util.Map;
 @Slf4j
 @ActiveProfiles("dev")
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {MmcMultiConsumerAutoConfiguration.class, DemoService.class, OneProcessor.class})
-@TestPropertySource(value = "classpath:application.properties")
+@SpringBootTest(classes = {MmcMultiProducerAutoConfiguration.class, MmcMultiConsumerAutoConfiguration.class,
+        DemoService.class, OneProcessor.class})
+@TestPropertySource(value = "classpath:application-string.properties")
 @DirtiesContext
-@EmbeddedKafka(topics = {"${spring.kafka.one.topic}"})
-class AppTest {
+@EmbeddedKafka(partitions = 1, brokerProperties = {"listeners=PLAINTEXT://localhost:9092", "port=9092"},
+        topics = {"${spring.kafka.one.topic}"})
+class KafkaStringMessageTest {
 
-
-    @Resource
-    private EmbeddedKafkaBroker embeddedKafkaBroker;
 
     @Value("${spring.kafka.one.topic}")
     private String topicOne;
 
     @Value("${spring.kafka.two.topic}")
     private String topicTwo;
+
+    @Resource(name = "fourKafkaSender")
+    private MmcKafkaSingleSender mmcKafkaSingleSender;
+
 
     @Test
     void testDealMessage() throws Exception {
@@ -69,8 +72,6 @@ class AppTest {
 
     void produceMessage() {
 
-        Map<String, Object> configs = new HashMap<>(KafkaTestUtils.producerProps(embeddedKafkaBroker));
-        Producer<String, String> producer = new DefaultKafkaProducerFactory<>(configs, new StringSerializer(), new StringSerializer()).createProducer();
 
         for (int i = 0; i < 10; i++) {
 
@@ -80,9 +81,9 @@ class AppTest {
             msg.setTimestamp(System.currentTimeMillis());
 
             String json = JsonUtil.toJsonStr(msg);
-            producer.send(new ProducerRecord<>(topicOne, "my-aggregate-id", json));
-            producer.send(new ProducerRecord<>(topicTwo, "my-aggregate-id", json));
-            producer.flush();
+
+            mmcKafkaSingleSender.sendStringMessage(topicOne, "aaa", json);
+
 
         }
     }

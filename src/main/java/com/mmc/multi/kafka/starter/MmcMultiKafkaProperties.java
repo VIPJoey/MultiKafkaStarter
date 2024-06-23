@@ -11,6 +11,7 @@
 package com.mmc.multi.kafka.starter;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -81,7 +82,7 @@ public class MmcMultiKafkaProperties {
         /**
          * 生产者.
          */
-        private final KafkaProperties.Producer producer = new KafkaProperties.Producer();
+        private final Producer producer = new Producer();
         /**
          * 监听器.
          */
@@ -113,5 +114,25 @@ public class MmcMultiKafkaProperties {
             return new HashMap<>(this.producer.buildProperties());
         }
 
+    }
+
+    @EqualsAndHashCode(callSuper = true)
+    @Data
+    public static class Producer extends KafkaProperties.Producer {
+
+        /**
+         * 是否启用.
+         */
+        private boolean enabled = true;
+
+        /**
+         * 生产者数量.
+         */
+        private int count = 1;
+
+        /**
+         * 生产者名称，如果有设置则会覆盖默认的xxxKakfkaSender名称.
+         */
+        private String name;
     }
 }

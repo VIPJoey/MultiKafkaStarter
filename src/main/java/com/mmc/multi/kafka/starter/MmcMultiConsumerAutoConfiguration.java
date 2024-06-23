@@ -65,7 +65,7 @@ public class MmcMultiConsumerAutoConfiguration extends BaseConsumerConfiguration
             MmcMultiKafkaProperties.MmcKafkaProperties properties = entry.getValue();
 
             // 是否开启
-            if (properties.isEnabled()) {
+            if (properties.isEnabled() && CommonUtil.isNotBlank(properties.getGroupId())) {
 
                 // 生成消费者
                 KafkaAbstractProcessor inputer = factory.buildInputer(name, properties, beanPostProcessor.getSuitableClass());
