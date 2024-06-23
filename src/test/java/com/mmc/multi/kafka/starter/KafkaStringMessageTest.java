@@ -11,28 +11,20 @@
 package com.mmc.multi.kafka.starter;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.kafka.core.DefaultKafkaProducerFactory;
-import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
-import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
- * AppTest.
+ * KafkaStringMessageTest.
  *
  * @author VIPJoey
  * @date 2023/10/14 下午4:56
@@ -56,7 +48,7 @@ class KafkaStringMessageTest {
     private String topicTwo;
 
     @Resource(name = "fourKafkaSender")
-    private MmcKafkaSingleSender mmcKafkaSingleSender;
+    private MmcKafkaSender mmcKafkaSender;
 
 
     @Test
@@ -82,7 +74,7 @@ class KafkaStringMessageTest {
 
             String json = JsonUtil.toJsonStr(msg);
 
-            mmcKafkaSingleSender.sendStringMessage(topicOne, "aaa", json);
+            mmcKafkaSender.sendStringMessage(topicOne, "aaa", json);
 
 
         }

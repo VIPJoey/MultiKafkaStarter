@@ -24,9 +24,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * MmcMultiProducerAutoConfiguration.
@@ -73,10 +71,18 @@ public class MmcMultiProducerAutoConfiguration implements BeanFactoryAware {
                 String beanName = Optional.ofNullable(properties.getProducer().getName())
                         .orElse(name + "KafkaSender");
 
-                KafkaTemplate<String, Object> template = mmcdKafkaTemplate(properties);
+
+                // 数量
+                List<KafkaTemplate<String, Object>> templates = new ArrayList<>(properties.getProducer().getCount());
+                for (int i = 0; i < properties.getProducer().getCount(); i++) {
+
+                    log.info("[pando] init producer {} - {} ", name, i);
+                    KafkaTemplate<String, Object> template = mmcKafkaTemplate(properties);
+                    templates.add(template);
+                }
 
                 // 创建实例
-                MmcKafkaSender sender = new MmcKafkaSingleSender(template);
+                MmcKafkaSender sender = new MmcKafkaMultiSender(templates);
                 outputs.put(beanName, sender);
 
                 // 注册到IOC
@@ -88,7 +94,7 @@ public class MmcMultiProducerAutoConfiguration implements BeanFactoryAware {
         return new MmcKafkaOutputContainer(outputs);
     }
 
-    private KafkaTemplate<String, Object> mmcdKafkaTemplate(MmcMultiKafkaProperties.MmcKafkaProperties producer) {
+    private KafkaTemplate<String, Object> mmcKafkaTemplate(MmcMultiKafkaProperties.MmcKafkaProperties producer) {
 
         return new KafkaTemplate<>(baseKafkaProducerFactory(producer));
 
