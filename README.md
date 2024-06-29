@@ -200,7 +200,7 @@ public class PbProcessor extends MmcKafkaKafkaAbastrctProcessor<DemoMsg> {
 
 ## 四、其它特性
 
-1、支持单次拉取kafka的batch消息里去重，需要实现`MmcKafkaMsg`的getRoutekey()和getTimestamp()方法；如果为false，则不要实现`MmcKafkaMsg`接口。
+1、支持单次拉取kafka的batch消息里去重，需要实现`MmcMsgDistinctAware`的getRoutekey()和getTimestamp()方法；如果为false，则不要实现`MmcMsgDistinctAware`接口。
 ```properties
 spring.kafka.xxx.duplicate=true
 ```
