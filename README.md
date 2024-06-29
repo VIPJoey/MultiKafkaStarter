@@ -271,6 +271,8 @@ class DemoAwareMsg implements MmcKafkaAware {
 * [《搭建大型分布式服务（三十九）SpringBoot 整合多个kafka数据源-支持Aware模式》](https://blog.csdn.net/hanyi_/article/details/139392161?spm=1001.2014.3001.5502)
 * [《搭建大型分布式服务（四十）SpringBoot 整合多个kafka数据源-支持生产者》](https://blog.csdn.net/hanyi_/article/details/139897315?spm=1001.2014.3001.5502)
 * [《搭建大型分布式服务（四十一）SpringBoot 整合多个kafka数据源-支持亿级消息生产者》](https://blog.csdn.net/hanyi_/article/details/139901889?spm=1001.2014.3001.5502)
+* [《搭建大型分布式服务（四十二）SpringBoot 无代码侵入实现多Kafka数据源整合插件发布》](https://blog.csdn.net/hanyi_/article/details/140064747)
+* [《搭建大型分布式服务（四十三）SpringBoot 无代码侵入实现多Kafka数据源发布到Maven中央仓库：让世界看到你的作品！》](https://blog.csdn.net/hanyi_/article/details/140065134)
 
 ## 七、特别说明
 
