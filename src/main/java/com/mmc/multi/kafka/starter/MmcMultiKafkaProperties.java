@@ -23,7 +23,7 @@ import java.util.Map;
  * MmcMultiKafkaProperties.
  *
  * @author VIPJoey
- * @date 2023/10/14 下午4:44
+ * @since 2023/10/14 下午4:44
  */
 @ToString
 @Data

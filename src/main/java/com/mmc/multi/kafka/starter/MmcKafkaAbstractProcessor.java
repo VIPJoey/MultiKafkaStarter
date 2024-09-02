@@ -22,7 +22,7 @@ import java.util.List;
  * MmcKafkaAbstractProcessor.
  *
  * @author VIPJoey
- * @date 2023/9/26 16:21
+ * @since 2023/9/26 16:21
  */
 @Slf4j
 @Setter

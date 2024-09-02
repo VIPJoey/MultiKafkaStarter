@@ -16,7 +16,7 @@ import java.util.Map;
  * MmcKafkaInputerContainer.
  *
  * @author VIPJoey
- * @date 2023/10/14 下午5:23
+ * @since 2023/10/14 下午5:23
  */
 public class MmcKafkaInputerContainer {
 

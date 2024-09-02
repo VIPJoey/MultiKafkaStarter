@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
  * MmcKafkaParallelAbstractProcessor.
  *
  * @author VIPJoey
- * @date 2024/9/1 20:14
+ * @since 2024/9/1 20:14
  */
 @Slf4j
 @Setter

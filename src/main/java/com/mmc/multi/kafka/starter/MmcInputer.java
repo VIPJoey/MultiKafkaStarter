@@ -16,7 +16,7 @@ import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
  * MmcInputer.
  *
  * @author VIPJoey
- * @date 2023/10/15 下午4:31
+ * @since 2023/10/15 下午4:31
  */
 public interface MmcInputer {
 

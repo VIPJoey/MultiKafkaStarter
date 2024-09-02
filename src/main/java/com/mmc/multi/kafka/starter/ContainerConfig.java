@@ -14,7 +14,7 @@ package com.mmc.multi.kafka.starter;
  * ContainerConfig.
  *
  * @author VIPJoey
- * @date 2024/9/1 20:40
+ * @since 2024/9/1 20:40
  */
 public interface ContainerConfig {
 

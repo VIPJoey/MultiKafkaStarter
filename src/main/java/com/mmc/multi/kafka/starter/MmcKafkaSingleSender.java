@@ -16,7 +16,7 @@ import org.springframework.kafka.core.KafkaTemplate;
  * MmcKafkaSingleSender.
  *
  * @author VIPJoey
- * @date 2024/6/23 15:28
+ * @since 2024/6/23 15:28
  */
 public class MmcKafkaSingleSender implements MmcKafkaSender {
 

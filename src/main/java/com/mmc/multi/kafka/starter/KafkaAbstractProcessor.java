@@ -30,7 +30,7 @@ import java.util.stream.Stream;
  * KafkaAbstractProcessor.
  *
  * @author VIPJoey
- * @date 2024/6/2 10:41
+ * @since 2024/6/2 10:41
  */
 @Slf4j
 @Setter

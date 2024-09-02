@@ -16,7 +16,7 @@ import lombok.Data;
  * ParalleMsg.
  *
  * @author VIPJoey
- * @date 2024/9/1 21:13
+ * @since 2024/9/1 21:13
  */
 @Data
 class ParalleMsg implements MmcMsgDistinctAware {

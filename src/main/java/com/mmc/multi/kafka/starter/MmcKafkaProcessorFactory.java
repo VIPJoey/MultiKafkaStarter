@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
  * MmcKafkaProcessorFactory.
  *
  * @author VIPJoey
- * @date 2023/10/29 下午12:51
+ * @since 2023/10/29 下午12:51
  */
 public class MmcKafkaProcessorFactory {
 

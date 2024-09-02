@@ -19,7 +19,7 @@ import org.springframework.util.StringUtils;
  * BaseConsumerConfiguration.
  *
  * @author VIPJoey
- * @date 2023/10/15 下午3:52
+ * @since 2023/10/15 下午3:52
  */
 class BaseConsumerConfiguration {
 

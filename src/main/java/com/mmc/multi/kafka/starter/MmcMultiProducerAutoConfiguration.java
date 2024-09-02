@@ -30,7 +30,7 @@ import java.util.*;
  * MmcMultiProducerAutoConfiguration.
  *
  * @author VIPJoey
- * @date 2024/6/23 15:09
+ * @since 2024/6/23 15:09
  */
 @Slf4j
 @Configuration

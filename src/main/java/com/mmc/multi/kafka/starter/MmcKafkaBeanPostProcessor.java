@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * MmcKafkaBeanPostProcessor.
  *
  * @author VIPJoey
- * @date 2023/10/29 下午5:52
+ * @since 2023/10/29 下午5:52
  */
 public class MmcKafkaBeanPostProcessor implements BeanPostProcessor {
 

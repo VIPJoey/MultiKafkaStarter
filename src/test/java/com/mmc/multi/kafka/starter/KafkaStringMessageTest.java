@@ -27,7 +27,7 @@ import javax.annotation.Resource;
  * KafkaStringMessageTest.
  *
  * @author VIPJoey
- * @date 2023/10/14 下午4:56
+ * @since 2023/10/14 下午4:56
  */
 @Slf4j
 @ActiveProfiles("dev")

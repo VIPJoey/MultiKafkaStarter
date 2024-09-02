@@ -26,7 +26,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * KafkaParalleMessageTest.
  *
  * @author VIPJoey
- * @date 2024/9/1 21:11
+ * @since 2024/9/1 21:11
  */
 @Slf4j
 @ActiveProfiles("dev")

@@ -14,7 +14,7 @@ package com.mmc.multi.kafka.starter;
  * MmcMsgDistinctAware.
  *
  * @author VIPJoey
- * @date 2023/10/29 上午10:37
+ * @since 2023/10/29 上午10:37
  */
 public interface MmcMsgDistinctAware {
 

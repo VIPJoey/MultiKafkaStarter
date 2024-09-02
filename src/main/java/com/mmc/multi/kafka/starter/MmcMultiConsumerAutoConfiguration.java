@@ -25,7 +25,7 @@ import java.util.Map;
  * MmcMultiConsumerAutoConfiguration.
  *
  * @author VIPJoey
- * @date 2023/10/14 下午4:28
+ * @since 2023/10/14 下午4:28
  */
 @Slf4j
 @Configuration

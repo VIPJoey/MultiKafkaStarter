@@ -14,7 +14,7 @@ package com.mmc.multi.kafka.starter;
  * MmcMsgKafkaAware.
  *
  * @author VIPJoey
- * @date 2024/6/2 15:39
+ * @since 2024/6/2 15:39
  */
 public interface MmcMsgKafkaAware {
 

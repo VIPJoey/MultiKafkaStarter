@@ -14,7 +14,7 @@ package com.mmc.multi.kafka.starter;
  * MmcKafkaSender.
  *
  * @author VIPJoey
- * @date 2024/6/23 15:24
+ * @since 2024/6/23 15:24
  */
 public interface MmcKafkaSender {
 

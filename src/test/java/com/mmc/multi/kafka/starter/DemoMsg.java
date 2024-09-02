@@ -16,7 +16,7 @@ import lombok.Data;
  * DemoMsg.
  *
  * @author VIPJoey
- * @date 2023/10/29 上午10:27
+ * @since 2023/10/29 上午10:27
  */
 @Data
 class DemoMsg implements MmcMsgKafkaAware {
