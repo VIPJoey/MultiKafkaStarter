@@ -42,7 +42,6 @@ public class MmcMultiKafkaProperties {
     @Data
     static class MmcKafkaProperties {
 
-
         /**
          * 是否启用.
          */
@@ -87,6 +86,10 @@ public class MmcMultiKafkaProperties {
          * 监听器.
          */
         private final KafkaProperties.Listener listener = new KafkaProperties.Listener();
+        /**
+         * 并发设置.
+         */
+        private Container container = new Container();
 
         /**
          * Create an initial map of consumer properties from the state of this instance.
@@ -134,5 +137,26 @@ public class MmcMultiKafkaProperties {
          * 生产者名称，如果有设置则会覆盖默认的xxxKakfkaSender名称.
          */
         private String name;
+    }
+
+    @Data
+    public static class Container implements ContainerConfig {
+
+        /**
+         * 是否启用多线程消费.
+         */
+        private boolean enabled = true;
+        /*
+         * 消费消息的速率（每秒接收的记录数），默认值为1000.
+         */
+        private int rate = 1000;
+        /*
+         * 最小批次数量，默认为2.
+         */
+        private int threshold = 2;
+        /*
+         * 设置并行度，默认值为可用处理器数量.
+         */
+        private int parallelism = Runtime.getRuntime().availableProcessors();
     }
 }

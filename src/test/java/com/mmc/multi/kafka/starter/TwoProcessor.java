@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * DemoProcessor.
@@ -25,7 +24,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-public class TwoProcessor extends MmcKafkaKafkaAbastrctProcessor<DemoMsg> {
+public class TwoProcessor extends MmcKafkaAbstractProcessor<DemoMsg> {
 
     @Resource
     private DemoService demoService;

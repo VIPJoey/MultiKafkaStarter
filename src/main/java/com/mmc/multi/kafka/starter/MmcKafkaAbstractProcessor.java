@@ -19,14 +19,14 @@ import org.springframework.util.CollectionUtils;
 import java.util.List;
 
 /**
- * MmcKafkaKafkaAbastrctProcessor.
+ * MmcKafkaAbstractProcessor.
  *
  * @author VIPJoey
  * @date 2023/9/26 16:21
  */
 @Slf4j
 @Setter
-public abstract class MmcKafkaKafkaAbastrctProcessor<T> extends KafkaAbstractProcessor<T> implements BatchMessageListener<String, Object> {
+public abstract class MmcKafkaAbstractProcessor<T> extends KafkaAbstractProcessor<T> implements BatchMessageListener<String, Object> {
 
     @Override
     public void onMessage(List<ConsumerRecord<String, Object>> records) {

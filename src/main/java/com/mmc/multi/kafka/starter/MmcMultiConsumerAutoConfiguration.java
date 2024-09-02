@@ -68,7 +68,7 @@ public class MmcMultiConsumerAutoConfiguration extends BaseConsumerConfiguration
             if (properties.isEnabled() && CommonUtil.isNotBlank(properties.getGroupId())) {
 
                 // 生成消费者
-                KafkaAbstractProcessor inputer = factory.buildInputer(name, properties, beanPostProcessor.getSuitableClass());
+                KafkaAbstractProcessor<?> inputer = factory.buildInputer(name, properties, beanPostProcessor.getSuitableClass());
 
                 // 输入源容器
                 ConcurrentMessageListenerContainer<Object, Object> container = concurrentMessageListenerContainer(properties);
@@ -77,6 +77,7 @@ public class MmcMultiConsumerAutoConfiguration extends BaseConsumerConfiguration
                 inputer.setContainer(container);
                 inputer.setName(name);
                 inputer.setProperties(properties);
+                inputer.init();
 
                 // 设置消费者
                 container.setupMessageListener(inputer);

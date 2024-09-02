@@ -10,30 +10,27 @@
 
 package com.mmc.multi.kafka.starter;
 
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 /**
- * DemoProcessor.
+ * com.mmc.multi.kafka.starter.FiveProcessor.
  *
- * @author VIPJoey
- * @date 2023/10/29 上午10:26
+ * @author tenkye
+ * @date 2024/9/1 20:59
  */
 @Slf4j
-@Service
-public class OneProcessor extends MmcKafkaAbstractProcessor<DemoMsg> {
+@Service("fiveProcessor")
+public class FiveProcessor extends MmcKafkaParallelAbstractProcessor<ParalleMsg, Void> {
 
 
     @Override
-    protected void dealMessage(List<DemoMsg> datas) {
-
+    protected Void handelBatchDatas(List<ParalleMsg> datas) {
         datas.forEach(x -> {
-            log.info("dealMessage one: {}", x);
+            log.info("handelBatchDatas one: {}", x);
         });
 
+        return null;
     }
-
-
 }

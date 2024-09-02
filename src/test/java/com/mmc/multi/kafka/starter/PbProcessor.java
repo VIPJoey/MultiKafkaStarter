@@ -27,7 +27,7 @@ import java.util.stream.Stream;
  */
 @Slf4j
 @Service("pbProcessor")
-public class PbProcessor extends MmcKafkaKafkaAbastrctProcessor<DemoMsg> {
+public class PbProcessor extends MmcKafkaAbstractProcessor<DemoMsg> {
 
     @Override
     protected Stream<DemoMsg> doParseProtobuf(byte[] record) {

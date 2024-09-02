@@ -1,4 +1,4 @@
-# MultiKafkaStarter [V2.2]
+# MultiKafkaStarter [V3.0]
 SpringBoot 零代码方式整合多个kafka数据源，支持任意kafka集群，已封装为一个小模块，集成所有kafka配置，让注意力重新回归业务本身。
 
 ## 一、功能特性
@@ -7,7 +7,7 @@ SpringBoot 零代码方式整合多个kafka数据源，支持任意kafka集群�
 * 支持批量消费kafka并对单批次消息根据条件去重
 * 支持消费kafka消息类型为pb格式
 * 支持任意数量生产者
-
+* 支持单批次内并发执行
 
 
 1、引入最新依赖包，如果找不到依赖包，请到工程目录```mvn clean package install```执行一下命令。
@@ -15,7 +15,7 @@ SpringBoot 零代码方式整合多个kafka数据源，支持任意kafka集群�
 <dependency>
     <groupId>io.github.vipjoey</groupId>
     <artifactId>multi-kafka-starter</artifactId>
-    <version>2.2</version>
+    <version>3.0</version>
 </dependency>
 
 ```
@@ -101,6 +101,17 @@ spring.kafka.one.consumer.auto-offset-reset=latest
 spring.kafka.one.consumer.max-poll-records=10
 spring.kafka.one.consumer.value-deserializer=org.apache.kafka.common.serialization.StringDeserializer
 spring.kafka.one.consumer.key-deserializer=org.apache.kafka.common.serialization.StringDeserializer
+## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## 
+## 下面是并发相关配置(可选)，需要继承 PandoKafkaParallelAbastrctProcessor 父类 ## ## 
+
+# 拆分的子任务大小，拆分越小，速度越快，占用内存越大
+spring.kafka.one.container.threshold=2
+# 执行子任务的处理速度
+spring.kafka.one.container.rate=1000
+# 执行子任务的并行度，并行度越大，速度越快，占用cpu越高
+spring.kafka.one.container.parallelism=8
+## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## 
+
 
 ## topic2的kafka配置
 spring.kafka.two.enabled=true
@@ -147,11 +158,11 @@ class DemoMsg implements MmcMsgDistinctAware {
 
 ```
 
-4、新建kafka消息处理类，要求继承`MmcKafkaKafkaAbastrctProcessor`，然后就可以愉快地编写你的业务逻辑了。
+4、新建kafka消息处理类，要求继承`MmcKafkaAbstractProcessor`，然后就可以愉快地编写你的业务逻辑了。
 ```java
 @Slf4j
 @Service("oneProcessor") // 你的处理类bean名称，如果没有定义bean名称，那么默认就是首字母缩写的类名称
-public class OneProcessor extends MmcKafkaKafkaAbastrctProcessor<DemoMsg> {
+public class OneProcessor extends MmcKafkaAbstractProcessor<DemoMsg> {
     
 
     @Override
@@ -165,7 +176,7 @@ public class OneProcessor extends MmcKafkaKafkaAbastrctProcessor<DemoMsg> {
 
 @Slf4j
 @Service("pbProcessor")
-public class PbProcessor extends MmcKafkaKafkaAbastrctProcessor<DemoMsg> {
+public class PbProcessor extends MmcKafkaAbstractProcessor<DemoMsg> {
 
     @Override
     protected Stream<DemoMsg> doParseProtobuf(byte[] record) {
@@ -195,6 +206,25 @@ public class PbProcessor extends MmcKafkaKafkaAbastrctProcessor<DemoMsg> {
     }
 }
 
+
+```
+
+5、如果需要并发处理则继承`MmcKafkaParallelAbstractProcessor`，然后就可以愉快地编写你的业务逻辑了。
+```java
+@Slf4j
+@Service
+public class FiveProcessor extends MmcKafkaParallelAbstractProcessor<DemoAwareMsg, Void> {
+
+    // 本方法会被并发执行，list的长度一般为threshold的值
+    @Override
+    protected Void handelBatchDatas(List<ParalleMsg> datas) {
+        datas.forEach(x -> {
+            log.info("handelBatchDatas one: {}", x);
+        });
+
+        return null;
+    }
+}
 
 ```
 
@@ -257,6 +287,7 @@ class DemoAwareMsg implements MmcKafkaAware {
 
 ## 五、变更记录
 
+* 20240901  v3.0 增加MmcKafkaParallelAbstractProcessor，支持多线程消费kafka消息
 * 20240623  v2.2 支持Kafka生产者，并对MultiKafkaConsumerStarter项目重命名为MultiKafkaStarter
 * 20240602  v2.1 支持获取kafka消息中topic、offset属性
 * 20240602  v2.0 支持protobuf、json格式

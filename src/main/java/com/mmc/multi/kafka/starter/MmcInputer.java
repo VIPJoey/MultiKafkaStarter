@@ -38,4 +38,8 @@ public interface MmcInputer {
      */
     void start();
 
+    /**
+     * 初始化kafka容器.
+     */
+    void init();
 }

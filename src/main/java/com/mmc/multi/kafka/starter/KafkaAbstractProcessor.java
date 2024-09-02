@@ -72,6 +72,11 @@ public abstract class KafkaAbstractProcessor<T> implements MmcInputer {
         this.properties = properties;
     }
 
+    @Override
+    public void init() {
+
+    }
+
     /**
      * 消费kafka消息.
      */
