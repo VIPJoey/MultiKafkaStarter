@@ -15,7 +15,7 @@ import lombok.Data;
 /**
  * ParalleMsg.
  *
- * @author tenkye
+ * @author VIPJoey
  * @date 2024/9/1 21:13
  */
 @Data

@@ -13,7 +13,7 @@ package com.mmc.multi.kafka.starter;
 /**
  * ContainerConfig.
  *
- * @author tenkye
+ * @author VIPJoey
  * @date 2024/9/1 20:40
  */
 public interface ContainerConfig {
