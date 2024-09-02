@@ -12,7 +12,7 @@
 
     <groupId>io.github.vipjoey</groupId>
     <artifactId>multi-kafka-starter</artifactId>
-    <version>2.2</version>
+    <version>3.0</version>
     <packaging>jar</packaging>
 
 
